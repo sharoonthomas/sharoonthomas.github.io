@@ -7,8 +7,6 @@ SITENAME = u'Outbox'
 SITEURL = 'www.sharoonthomas.com'
 
 THEME = "pelican-themes/pure-single"
-#PLUGIN_PATH = 'pelican-plugins'
-PLUGINS = ['assets', ]
 
 TIMEZONE = 'America/NewYork'
 
