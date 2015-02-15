@@ -8,7 +8,7 @@ SITEURL = 'www.sharoonthomas.com'
 
 THEME = "pelican-themes/pure-single"
 
-TIMEZONE = 'America/NewYork'
+TIMEZONE = 'America/New_York'
 
 DEFAULT_LANG = u'en'
 
@@ -35,4 +35,10 @@ DEFAULT_PAGINATION = 10
 # Uncomment following line if you want document-relative URLs when developing
 RELATIVE_URLS = True
 
+# Theme settings
+PROFILE_IMG_URL = "images/gravatar.png"
+COVER_IMG_URL = "images/light-in-a-bottle.jpg"
+
+STATIC_PATHS = ['images']
+READERS = {'html': None}
 OUTPUT_RETENTION = ('CNAME',)
