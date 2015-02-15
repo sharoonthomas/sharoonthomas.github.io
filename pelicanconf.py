@@ -36,8 +36,9 @@ DEFAULT_PAGINATION = 10
 RELATIVE_URLS = True
 
 # Theme settings
-PROFILE_IMG_URL = "images/gravatar.png"
-COVER_IMG_URL = "images/light-in-a-bottle.jpg"
+PROFILE_IMG_URL = "/images/gravatar.png"
+COVER_IMG_URL = "/images/light-in-a-bottle.jpg"
+TAGLINE = "I would love to change the world, but they won’t give me the source code"
 
 STATIC_PATHS = ['images']
 READERS = {'html': None}
