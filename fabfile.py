@@ -46,4 +46,4 @@ def publish():
     local('pelican -s publishconf.py')
     # Master because its a user page
     local('ghp-import output -b master')
-    local('git push www master')
+    local('git push -f www master')
