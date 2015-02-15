@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom"><title>Outbox</title><link href="/" rel="alternate"></link><link href="/feeds/all.atom.xml" rel="self"></link><id>/</id><updated>2014-05-09T00:00:00-04:00</updated><entry><title>TDD, flask and the pypa sprint at pycon 2014</title><link href="/tdd-flask-and-pypa-sprint-at-pycon-2014.html" rel="alternate"></link><updated>2014-05-09T00:00:00-04:00</updated><author><name>Sharoon Thomas</name></author><id>tag:,2014-05-09:tdd-flask-and-pypa-sprint-at-pycon-2014.html</id><summary type="html">&lt;p&gt;&lt;em&gt;Thanks to a controversial post by David Hansson declaring the death of test
+driven development, and the google hangout by David, Kent Beck and Martin
+Fowler that I finally have gathered the courage to write this post.&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;I had the opportunity to sprint with the python packaging authority (pypa)
+team on warehouse, the next generation python package repository. I
+volunteered to refactor the codebase to use more of flask. What stumped me was
+the &amp;quot;unit tests&amp;quot; in the project.&lt;/p&gt;
+&lt;p&gt;The package has 100% test coverage and the continuous integration system
+(read travis) ensures that any pull request which reduces that promptly fails.
+Sounds great isn't it ? But, soon came the issues and here are a few:&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;1. The false confidence of 100% coverage&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;As I moved the project from manually connected URL routes to using flask
+blueprints and the route decorator, I discovered two endpoints which were well
+tested but not connected to the URL Map because the contributor had forgotten
+to add them and the unit test only tested that given a stubbed request a
+stubbed response is returned.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;2. The abuse of mocks and the resulting brittleness&lt;/strong&gt;&lt;/p&gt;
+&lt;img alt="Absure of mocks and the resulting brittleness" src="/images/content/technology/abuse-of-mocks.png" /&gt;
+&lt;p&gt;The above code tests the root view and from what I can count has 12 stubs. It
+felt wrong but I wasn't sure, but I was happy to see another developer at the
+sprint expressing his displeasure at the number of mocks he had to change to
+make a simple improvement in the code.&lt;/p&gt;
+&lt;p&gt;During the &lt;a class="reference external" href="https://plus.google.com/events/ci2g23mk0lh9too9bgbp3rbut0k"&gt;hangout&lt;/a&gt;
+today, Kent beck highlighted such use of &amp;quot;mocks returning mocks returning mocks&amp;quot;
+as the primary reason why he thinks TDD becomes counterproductive.&lt;/p&gt;
+&lt;p&gt;Comments on &lt;a class="reference external" href="https://news.ycombinator.com/item?id=7721768"&gt;HN&lt;/a&gt;&lt;/p&gt;
+</summary><category term="python"></category><category term="pycon"></category></entry><entry><title>The Tryton Web Client</title><link href="/tryton-web-client.html" rel="alternate"></link><updated>2012-03-12T00:00:00-04:00</updated><author><name>Sharoon Thomas</name></author><id>tag:,2012-03-12:tryton-web-client.html</id><summary type="html">&lt;p&gt;The subject has been a topic of immense interest since 2008, and some even
+believe that Tryton would have had a wider acceptance if it had a web client.
+And with a lot of sarcasm Stefan Rijnhart tweeted a few days back:&lt;/p&gt;
+&lt;img alt="" src="/images/content/technology/tweet-by-therp-stephan-tryton-web-client.png" /&gt;
+&lt;p&gt;Thanks to the motivation by Stefan, I finally decided to dedicate my weekend
+to learning ExtJS (a wonderful JS framework I had wanted to play with since
+its version 2) and to try and build a proof of concept for the Tryton web
+client. From my previous conversations with Cedric and prior experiences
+a.k.a disasters with the OpenERP web client, I had set my goals for the
+project:&lt;/p&gt;
+&lt;ol class="arabic simple"&gt;
+&lt;li&gt;Should be similar to the GTK client in look, feel and functionality.&lt;/li&gt;
+&lt;li&gt;Must be a JS client side application and the server side should only be the
+JSON RPC service of trytond.&lt;/li&gt;
+&lt;li&gt;It is a client for an ERP system, so should have the feel of a desktop
+application and not a social network or a blog.&lt;/li&gt;
+&lt;li&gt;Should work on tablets too (a picture from the ipad is attached).&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;So here is the result:&lt;/p&gt;
+&lt;ul class="simple"&gt;
+&lt;li&gt;The source code: &lt;a class="reference external" href="https://github.com/openlabs/trytonweb"&gt;https://github.com/openlabs/trytonweb&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;A hosted link: &lt;a class="reference external" href="http://openlabs.co.in/~st/trytonweb"&gt;http://openlabs.co.in/~st/trytonweb&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;WSGI script to run your tryton: &lt;a class="reference external" href="https://gist.github.com/2019037"&gt;https://gist.github.com/2019037&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;So what does it include ?&lt;/p&gt;
+&lt;ul class="simple"&gt;
+&lt;li&gt;The client behaves exactly like a desktop app, so you can connect to
+remote/local tryton.&lt;/li&gt;
+&lt;li&gt;Uses HTML5 localstorage to save the connection profiles&lt;/li&gt;
+&lt;li&gt;A custom data handling proxy to easily use Tryton models&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="kd"&gt;var&lt;/span&gt; &lt;span class="nx"&gt;ir_ui_menu_proxy&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="k"&gt;new&lt;/span&gt; &lt;span class="nx"&gt;Ext&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;createByAlias&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;proxy.tmodel&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+    &lt;span class="nx"&gt;modelName&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;ir.ui.menu&amp;quot;&lt;/span&gt;
+&lt;span class="p"&gt;});&lt;/span&gt;
+
+&lt;span class="nx"&gt;ir_ui_menu_proxy&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;doRequest&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;
+    &lt;span class="s1"&gt;&amp;#39;search_read&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+    &lt;span class="p"&gt;[[&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;parent&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;=&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="kc"&gt;false&lt;/span&gt;&lt;span class="p"&gt;],&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;1000&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="kc"&gt;null&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;name&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;childs&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;]],&lt;/span&gt;
+
+    &lt;span class="c1"&gt;// Callback&lt;/span&gt;
+    &lt;span class="kd"&gt;function&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;result&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+      &lt;span class="nx"&gt;console&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;log&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;result&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+    &lt;span class="p"&gt;});&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;What does the WSGI script do ?&lt;/p&gt;
+&lt;p&gt;The script is the same as the one in the proposal by Cedric in
+&lt;a class="reference external" href="http://codereview.tryton.org/92001/"&gt;Issue 92001&lt;/a&gt;
+except that it adds a Middleware to handle OPTIONS requests and CORS headers.&lt;/p&gt;
+&lt;p&gt;Some screenshots:&lt;/p&gt;
+&lt;div class="section" id="on-the-ipad"&gt;
+&lt;h2&gt;On the ipad&lt;/h2&gt;
+&lt;img alt="Tryton Web Client On the ipad" src="/images/content/technology/tryton-web-client-1.png" /&gt;
+&lt;/div&gt;
+&lt;div class="section" id="the-login-screen"&gt;
+&lt;h2&gt;The login screen&lt;/h2&gt;
+&lt;img alt="Tryton Web Client The login Screen" src="/images/content/technology/tryton-web-client-2.png" /&gt;
+&lt;/div&gt;
+&lt;div class="section" id="profile-editor"&gt;
+&lt;h2&gt;Profile Editor&lt;/h2&gt;
+&lt;img alt="Profile editor of Tryton Web Client" src="/images/content/technology/tryton-web-client-3.png" /&gt;
+&lt;/div&gt;
+&lt;div class="section" id="test-with-a-bad-password"&gt;
+&lt;h2&gt;Test with a bad password&lt;/h2&gt;
+&lt;img alt="Test with a bad password on Tryton Web Client" src="/images/content/technology/tryton-web-client-4.png" /&gt;
+&lt;/div&gt;
+&lt;div class="section" id="successful-login"&gt;
+&lt;h2&gt;Successful login&lt;/h2&gt;
+&lt;img alt="After a successful login on Tryton Web Client" src="/images/content/technology/tryton-web-client-5.png" /&gt;
+&lt;p&gt;That is all for now.&lt;/p&gt;
+&lt;p&gt;Catch me on #tryton freenode IRC channel if you have questions.&lt;/p&gt;
+&lt;/div&gt;
+</summary><category term="tryton"></category><category term="python"></category><category term="web"></category></entry><entry><title>I created this blog in 2006</title><link href="/i-created-this-blog-in-2006.html" rel="alternate"></link><updated>2009-01-14T00:00:00-05:00</updated><author><name>Sharoon Thomas</name></author><id>tag:,2009-01-14:i-created-this-blog-in-2006.html</id><summary type="html">&lt;p&gt;I created this blog in 2006, when I thought I should start scribbling my
+thoughts somewhere....
+But it took me this Jan of 2009 to draft this first blog.
+(I hope it just does make it out of the drafts)&lt;/p&gt;
+&lt;p&gt;If my concern in 2006 was 'What to blog?', today it has become
+'Why should another day go undocumented? I have the rights too..&lt;/p&gt;
+&lt;p&gt;I believe this blog will help me talk to myself.... if you happen to
+accidentally overhear them (as I don't plan on disclosing this blog to anybody)
+its all about My dreams, thoughts and the very few of them which transform
+into action.&lt;/p&gt;
+&lt;p&gt;My interests on date seem to be computing, programming and nothing.
+May be I can scribble my little know how of computing too...&lt;/p&gt;
+&lt;p&gt;Isn't this enough blogging for day 1? I guess yes!&lt;/p&gt;
+</summary><category term="old"></category></entry></feed>

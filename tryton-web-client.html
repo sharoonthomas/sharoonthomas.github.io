@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Outbox, I would love to change the world, but they won’t give me the source code">
+
+        <link rel="alternate"  href="/feeds/all.atom.xml" type="application/atom+xml" title="Outbox Full Atom Feed"/>
+
+        <title>The Tryton Web Client // Outbox // I would love to change the world, but they won’t give me the source code</title>
+
+
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/pure/0.3.0/pure-min.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.1.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/theme/css/pure.css">
+    <link rel="stylesheet" href="/theme/css/pygments.css">
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/fitvids/1.0.1/jquery.fitvids.min.js"></script>
+    <script>
+        $(document).ready(function(){
+            $(".content").fitVids();
+        });
+    </script>
+</head>
+
+<body>
+    <div class="pure-g-r" id="layout">
+        <div class="sidebar pure-u">
+            <div class="cover-img" style="background-image: url('/images/light-in-a-bottle.jpg')">
+                <div class="cover-body">
+                    <header class="header">
+                        <hgroup>
+                            <img class="avatar" src="/images/gravatar.png">
+                            <h1 class="brand-main"><a href="">Outbox</a></h1>
+                            <p class="tagline">I would love to change the world, but they won’t give me the source code</p>
+                                <p class="social">
+                                    <a href="https://github.com/sharoonthomas/">
+                                        <i class="fa fa-github fa-3x"></i>
+                                    </a>
+                                    <a href="https://www.linkedin.com/in/sharoonthomas">
+                                        <i class="fa fa-linkedin fa-3x"></i>
+                                    </a>
+                                    <a href="https://twitter.com/sharoonthomas">
+                                        <i class="fa fa-twitter-square fa-3x"></i>
+                                    </a>
+                                </p>
+                        </hgroup>
+                    </header>
+                </div>
+            </div>
+        </div>
+    <div class="pure-u">
+        <div class="content">
+            <section class="post">
+                <header class="post-header">
+                    <h1>The Tryton Web Client</h1>
+                        <p class="post-meta">
+                            // under                                 <a class="post-category" href="/tag/tryton.html">tryton</a>
+                                <a class="post-category" href="/tag/python.html">python</a>
+                                <a class="post-category" href="/tag/web.html">web</a>
+                        </p>
+                </header>
+            </section>
+            <p>The subject has been a topic of immense interest since 2008, and some even
+believe that Tryton would have had a wider acceptance if it had a web client.
+And with a lot of sarcasm Stefan Rijnhart tweeted a few days back:</p>
+<img alt="" src="/images/content/technology/tweet-by-therp-stephan-tryton-web-client.png" />
+<p>Thanks to the motivation by Stefan, I finally decided to dedicate my weekend
+to learning ExtJS (a wonderful JS framework I had wanted to play with since
+its version 2) and to try and build a proof of concept for the Tryton web
+client. From my previous conversations with Cedric and prior experiences
+a.k.a disasters with the OpenERP web client, I had set my goals for the
+project:</p>
+<ol class="arabic simple">
+<li>Should be similar to the GTK client in look, feel and functionality.</li>
+<li>Must be a JS client side application and the server side should only be the
+JSON RPC service of trytond.</li>
+<li>It is a client for an ERP system, so should have the feel of a desktop
+application and not a social network or a blog.</li>
+<li>Should work on tablets too (a picture from the ipad is attached).</li>
+</ol>
+<p>So here is the result:</p>
+<ul class="simple">
+<li>The source code: <a class="reference external" href="https://github.com/openlabs/trytonweb">https://github.com/openlabs/trytonweb</a></li>
+<li>A hosted link: <a class="reference external" href="http://openlabs.co.in/~st/trytonweb">http://openlabs.co.in/~st/trytonweb</a></li>
+<li>WSGI script to run your tryton: <a class="reference external" href="https://gist.github.com/2019037">https://gist.github.com/2019037</a></li>
+</ul>
+<p>So what does it include ?</p>
+<ul class="simple">
+<li>The client behaves exactly like a desktop app, so you can connect to
+remote/local tryton.</li>
+<li>Uses HTML5 localstorage to save the connection profiles</li>
+<li>A custom data handling proxy to easily use Tryton models</li>
+</ul>
+<div class="highlight"><pre><span class="kd">var</span> <span class="nx">ir_ui_menu_proxy</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Ext</span><span class="p">.</span><span class="nx">createByAlias</span><span class="p">(</span><span class="s1">&#39;proxy.tmodel&#39;</span><span class="p">,</span> <span class="p">{</span>
+    <span class="nx">modelName</span><span class="o">:</span> <span class="s2">&quot;ir.ui.menu&quot;</span>
+<span class="p">});</span>
+
+<span class="nx">ir_ui_menu_proxy</span><span class="p">.</span><span class="nx">doRequest</span><span class="p">(</span>
+    <span class="s1">&#39;search_read&#39;</span><span class="p">,</span>
+    <span class="p">[[</span><span class="s1">&#39;parent&#39;</span><span class="p">,</span> <span class="s1">&#39;=&#39;</span><span class="p">,</span> <span class="kc">false</span><span class="p">],</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1000</span><span class="p">,</span> <span class="kc">null</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="s1">&#39;childs&#39;</span><span class="p">]],</span>
+
+    <span class="c1">// Callback</span>
+    <span class="kd">function</span><span class="p">(</span><span class="nx">result</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">result</span><span class="p">);</span>
+    <span class="p">});</span>
+</pre></div>
+<p>What does the WSGI script do ?</p>
+<p>The script is the same as the one in the proposal by Cedric in
+<a class="reference external" href="http://codereview.tryton.org/92001/">Issue 92001</a>
+except that it adds a Middleware to handle OPTIONS requests and CORS headers.</p>
+<p>Some screenshots:</p>
+<div class="section" id="on-the-ipad">
+<h2>On the ipad</h2>
+<img alt="Tryton Web Client On the ipad" src="/images/content/technology/tryton-web-client-1.png" />
+</div>
+<div class="section" id="the-login-screen">
+<h2>The login screen</h2>
+<img alt="Tryton Web Client The login Screen" src="/images/content/technology/tryton-web-client-2.png" />
+</div>
+<div class="section" id="profile-editor">
+<h2>Profile Editor</h2>
+<img alt="Profile editor of Tryton Web Client" src="/images/content/technology/tryton-web-client-3.png" />
+</div>
+<div class="section" id="test-with-a-bad-password">
+<h2>Test with a bad password</h2>
+<img alt="Test with a bad password on Tryton Web Client" src="/images/content/technology/tryton-web-client-4.png" />
+</div>
+<div class="section" id="successful-login">
+<h2>Successful login</h2>
+<img alt="After a successful login on Tryton Web Client" src="/images/content/technology/tryton-web-client-5.png" />
+<p>That is all for now.</p>
+<p>Catch me on #tryton freenode IRC channel if you have questions.</p>
+</div>
+
+            <a href="#" class="go-top">Go Top</a>
+<footer class="footer">
+    <p>&copy; Sharoon Thomas &ndash;
+        Built with <a href="https://github.com/PurePelicanTheme/pure-single">Pure Theme</a>
+        for <a href="http://blog.getpelican.com/">Pelican</a>
+    </p>
+</footer>        </div>
+    </div>
+    </div>
+    <script>
+        var $top = $('.go-top');
+
+        // Show or hide the sticky footer button
+        $(window).scroll(function() {
+            if ($(this).scrollTop() > 200) {
+                $top.fadeIn(200);
+            } else {
+                $top.fadeOut(200);
+            }
+        });
+
+        // Animate the scroll to top
+        $top.click(function(event) {
+            event.preventDefault();
+            $('html, body').animate({scrollTop: 0}, 300);
+        })
+
+        // Makes sure that the href="#" attached to the <a> elements
+        // don't scroll you back up the page.
+        $('body').on('click', 'a[href="#"]', function(event) {
+            event.preventDefault();
+        });
+    </script>
+
+</body>
+</html>

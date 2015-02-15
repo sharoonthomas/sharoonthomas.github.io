@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Outbox, I would love to change the world, but they won’t give me the source code">
+
+        <link rel="alternate"  href="/feeds/all.atom.xml" type="application/atom+xml" title="Outbox Full Atom Feed"/>
+
+        <title>TDD, flask and the pypa sprint at pycon 2014 // Outbox // I would love to change the world, but they won’t give me the source code</title>
+
+
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/pure/0.3.0/pure-min.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.1.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/theme/css/pure.css">
+    <link rel="stylesheet" href="/theme/css/pygments.css">
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/fitvids/1.0.1/jquery.fitvids.min.js"></script>
+    <script>
+        $(document).ready(function(){
+            $(".content").fitVids();
+        });
+    </script>
+</head>
+
+<body>
+    <div class="pure-g-r" id="layout">
+        <div class="sidebar pure-u">
+            <div class="cover-img" style="background-image: url('/images/light-in-a-bottle.jpg')">
+                <div class="cover-body">
+                    <header class="header">
+                        <hgroup>
+                            <img class="avatar" src="/images/gravatar.png">
+                            <h1 class="brand-main"><a href="">Outbox</a></h1>
+                            <p class="tagline">I would love to change the world, but they won’t give me the source code</p>
+                                <p class="social">
+                                    <a href="https://github.com/sharoonthomas/">
+                                        <i class="fa fa-github fa-3x"></i>
+                                    </a>
+                                    <a href="https://www.linkedin.com/in/sharoonthomas">
+                                        <i class="fa fa-linkedin fa-3x"></i>
+                                    </a>
+                                    <a href="https://twitter.com/sharoonthomas">
+                                        <i class="fa fa-twitter-square fa-3x"></i>
+                                    </a>
+                                </p>
+                        </hgroup>
+                    </header>
+                </div>
+            </div>
+        </div>
+    <div class="pure-u">
+        <div class="content">
+            <section class="post">
+                <header class="post-header">
+                    <h1>TDD, flask and the pypa sprint at pycon 2014</h1>
+                        <p class="post-meta">
+                            // under                                 <a class="post-category" href="/tag/python.html">python</a>
+                                <a class="post-category" href="/tag/pycon.html">pycon</a>
+                        </p>
+                </header>
+            </section>
+            <p><em>Thanks to a controversial post by David Hansson declaring the death of test
+driven development, and the google hangout by David, Kent Beck and Martin
+Fowler that I finally have gathered the courage to write this post.</em></p>
+<p>I had the opportunity to sprint with the python packaging authority (pypa)
+team on warehouse, the next generation python package repository. I
+volunteered to refactor the codebase to use more of flask. What stumped me was
+the &quot;unit tests&quot; in the project.</p>
+<p>The package has 100% test coverage and the continuous integration system
+(read travis) ensures that any pull request which reduces that promptly fails.
+Sounds great isn't it ? But, soon came the issues and here are a few:</p>
+<p><strong>1. The false confidence of 100% coverage</strong></p>
+<p>As I moved the project from manually connected URL routes to using flask
+blueprints and the route decorator, I discovered two endpoints which were well
+tested but not connected to the URL Map because the contributor had forgotten
+to add them and the unit test only tested that given a stubbed request a
+stubbed response is returned.</p>
+<p><strong>2. The abuse of mocks and the resulting brittleness</strong></p>
+<img alt="Absure of mocks and the resulting brittleness" src="/images/content/technology/abuse-of-mocks.png" />
+<p>The above code tests the root view and from what I can count has 12 stubs. It
+felt wrong but I wasn't sure, but I was happy to see another developer at the
+sprint expressing his displeasure at the number of mocks he had to change to
+make a simple improvement in the code.</p>
+<p>During the <a class="reference external" href="https://plus.google.com/events/ci2g23mk0lh9too9bgbp3rbut0k">hangout</a>
+today, Kent beck highlighted such use of &quot;mocks returning mocks returning mocks&quot;
+as the primary reason why he thinks TDD becomes counterproductive.</p>
+<p>Comments on <a class="reference external" href="https://news.ycombinator.com/item?id=7721768">HN</a></p>
+
+            <a href="#" class="go-top">Go Top</a>
+<footer class="footer">
+    <p>&copy; Sharoon Thomas &ndash;
+        Built with <a href="https://github.com/PurePelicanTheme/pure-single">Pure Theme</a>
+        for <a href="http://blog.getpelican.com/">Pelican</a>
+    </p>
+</footer>        </div>
+    </div>
+    </div>
+    <script>
+        var $top = $('.go-top');
+
+        // Show or hide the sticky footer button
+        $(window).scroll(function() {
+            if ($(this).scrollTop() > 200) {
+                $top.fadeIn(200);
+            } else {
+                $top.fadeOut(200);
+            }
+        });
+
+        // Animate the scroll to top
+        $top.click(function(event) {
+            event.preventDefault();
+            $('html, body').animate({scrollTop: 0}, 300);
+        })
+
+        // Makes sure that the href="#" attached to the <a> elements
+        // don't scroll you back up the page.
+        $('body').on('click', 'a[href="#"]', function(event) {
+            event.preventDefault();
+        });
+    </script>
+
+</body>
+</html>
