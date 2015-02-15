@@ -4,9 +4,13 @@ from __future__ import unicode_literals
 
 AUTHOR = u'Sharoon Thomas'
 SITENAME = u'Outbox'
-SITEURL = ''
+SITEURL = 'www.sharoonthomas.com'
 
-TIMEZONE = 'Europe/Paris'
+THEME = "pelican-themes/pure-single"
+#PLUGIN_PATH = 'pelican-plugins'
+PLUGINS = ['assets', ]
+
+TIMEZONE = 'America/NewYork'
 
 DEFAULT_LANG = u'en'
 
@@ -22,13 +26,15 @@ LINKS =  (('Pelican', 'http://getpelican.com/'),
           ('You can modify those links in your config file', '#'),)
 
 # Social widget
-SOCIAL = (('You can add links in your config file', '#'),
-          ('Another social link', '#'),)
+SOCIAL = (
+    ('github', 'https://github.com/sharoonthomas/'),
+    ('linkedin', 'https://www.linkedin.com/in/sharoonthomas'),
+    ('twitter-square', 'https://twitter.com/sharoonthomas'),
+)
 
 DEFAULT_PAGINATION = 10
 
 # Uncomment following line if you want document-relative URLs when developing
-#RELATIVE_URLS = True
-
+RELATIVE_URLS = True
 
 OUTPUT_RETENTION = ('CNAME',)
