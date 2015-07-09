@@ -65,7 +65,7 @@ instantly notice that pytest fixtures for nereid are modular and reusable
 even in other fixtures while ``setup_defaults`` usually ended up being
 long methods.
 
-A fixture with the scope as session
+A fixture with the scope as session that installs the module being tested.
 
 .. code-block:: python
 
@@ -160,8 +160,8 @@ be seen in the stripe payment gateway integration module.
 Transactions through fixtures
 `````````````````````````````
 
-A common setup and teardown in every test is the starting and stopping of
-a tryton transaction. pytest offers a way to write fixtures for tests that
+A common setup and teardown pattern in every test is the starting and stopping
+of a tryton transaction. pytest offers a way to write fixtures for tests that
 can be enfored to be auto used.
 
 .. code-block:: python
