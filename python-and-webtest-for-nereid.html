@@ -1,0 +1,340 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Outbox, I would love to change the world, but they won’t give me the source code">
+
+        <link rel="alternate"  href="/feeds/all.atom.xml" type="application/atom+xml" title="Outbox Full Atom Feed"/>
+
+        <title>Using pytest and webtest with nereid // Outbox // I would love to change the world, but they won’t give me the source code</title>
+
+
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/pure/0.3.0/pure-min.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.1.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/theme/css/pure.css">
+    <link rel="stylesheet" href="/theme/css/pygments.css">
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/fitvids/1.0.1/jquery.fitvids.min.js"></script>
+    <script>
+        $(document).ready(function(){
+            $(".content").fitVids();
+        });
+    </script>
+</head>
+
+<body>
+    <div class="pure-g-r" id="layout">
+        <div class="sidebar pure-u">
+            <div class="cover-img" style="background-image: url('/images/light-in-a-bottle.jpg')">
+                <div class="cover-body">
+                    <header class="header">
+                        <hgroup>
+                            <img class="avatar" src="/images/gravatar.png">
+                            <h1 class="brand-main"><a href="">Outbox</a></h1>
+                            <p class="tagline">I would love to change the world, but they won’t give me the source code</p>
+                                <p class="social">
+                                    <a href="https://github.com/sharoonthomas/">
+                                        <i class="fa fa-github fa-3x"></i>
+                                    </a>
+                                    <a href="https://www.linkedin.com/in/sharoonthomas">
+                                        <i class="fa fa-linkedin fa-3x"></i>
+                                    </a>
+                                    <a href="https://twitter.com/sharoonthomas">
+                                        <i class="fa fa-twitter-square fa-3x"></i>
+                                    </a>
+                                </p>
+                        </hgroup>
+                    </header>
+                </div>
+            </div>
+        </div>
+    <div class="pure-u">
+        <div class="content">
+            <section class="post">
+                <header class="post-header">
+                    <h1>Using pytest and webtest with nereid</h1>
+                        <p class="post-meta">
+                            // under                                 <a class="post-category" href="/tag/tryton.html">tryton</a>
+                                <a class="post-category" href="/tag/python.html">python</a>
+                                <a class="post-category" href="/tag/testing.html">testing</a>
+                                <a class="post-category" href="/tag/nereid.html">nereid</a>
+                        </p>
+                </header>
+            </section>
+            <p>I came across <a class="reference external" href="http://webtest.readthedocs.org/en/latest/">webtest</a> a few weeks back when hacking on a flask project and
+I instantly knew that most nereid tests were functional tests and they
+could be better written with <a class="reference external" href="http://webtest.readthedocs.org/en/latest/">webtest</a>. Since <a class="reference external" href="https://pytest.org/">pytest</a> has become the
+preferred way of writing tests in <a class="reference external" href="http://www.tryton.org/">Tryton</a>, this post combines both to
+write better and cleaner <a class="reference external" href="http://nereid.readthedocs.org/en/latest/">nereid</a> tests using <a class="reference external" href="https://pytest.org/">pytest</a> and <a class="reference external" href="http://webtest.readthedocs.org/en/latest/">webtest</a>.</p>
+<p>The examples below assume that you have a version of nereid 3.4.0.6 or
+greater.</p>
+<div class="section" id="quick-start">
+<h2>Quick Start</h2>
+<p>The most important object in WebTest is a TestApp, the wrapper for WSGI
+applications. It also allows you to perform HTTP requests on it, much like the
+<tt class="docutils literal">test_client</tt> in nereid tests. To use it, you simply instantiate it with
+a WSGI application, which in this case would be the nereid test app.</p>
+<p>Create a test app</p>
+<div class="highlight"><pre><span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">webtest</span> <span class="kn">import</span> <span class="n">TestApp</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">nereid.testing</span> <span class="kn">import</span> <span class="n">get_app</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">app</span> <span class="o">=</span> <span class="n">TestApp</span><span class="p">(</span><span class="n">get_app</span><span class="p">())</span>
+</pre></div>
+<p>Then you can get the response of a HTTP GET within a transaction using</p>
+<div class="highlight"><pre><span class="o">&gt;&gt;&gt;</span> <span class="n">resp</span> <span class="o">=</span> <span class="n">app</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;/&#39;</span><span class="p">)</span>
+</pre></div>
+<p>And check the results, like response's status</p>
+<div class="highlight"><pre><span class="o">&gt;&gt;&gt;</span> <span class="k">assert</span> <span class="n">resp</span><span class="o">.</span><span class="n">status</span> <span class="o">==</span> <span class="s">&#39;200 OK&#39;</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="k">assert</span> <span class="n">resp</span><span class="o">.</span><span class="n">status_int</span> <span class="o">==</span> <span class="mi">200</span>
+</pre></div>
+<p>Response's headers</p>
+<div class="highlight"><pre><span class="o">&gt;&gt;&gt;</span> <span class="k">assert</span> <span class="n">resp</span><span class="o">.</span><span class="n">content_type</span> <span class="o">==</span> <span class="s">&#39;text/html&#39;</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="k">assert</span> <span class="n">resp</span><span class="o">.</span><span class="n">content_length</span> <span class="o">&gt;</span> <span class="mi">0</span>
+</pre></div>
+</div>
+<div class="section" id="fixtures">
+<h2>Fixtures</h2>
+<p>Testing a database driven application like nereid, built over a full-stack
+framework requires extensive setup and teardown functions. <a class="reference internal" href="#fixtures">Fixtures</a> in
+<a class="reference external" href="https://pytest.org/">pytest</a> are a dramatic improvement where they are implemented in a modular
+manner with explicit names.</p>
+<p>If you are familiar with x-unit style testing in nereid, this is what was
+done in every <tt class="docutils literal">setup_defaults</tt> method in unit test classes. You will
+instantly notice that pytest fixtures for nereid are modular and reusable
+even in other fixtures while <tt class="docutils literal">setup_defaults</tt> usually ended up being
+long methods.</p>
+<p>A fixture with the scope as session</p>
+<div class="highlight"><pre><span class="kn">import</span> <span class="nn">pytest</span>
+<span class="kn">from</span> <span class="nn">webtest</span> <span class="kn">import</span> <span class="n">TestApp</span>
+
+<span class="nd">@pytest.fixture</span><span class="p">(</span><span class="n">scope</span><span class="o">=</span><span class="s">&#39;session&#39;</span><span class="p">,</span> <span class="n">autouse</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">install_module</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Install tryton module in specified database.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span> <span class="nn">trytond.tests</span> <span class="kn">import</span> <span class="n">test_tryton</span>
+    <span class="n">test_tryton</span><span class="o">.</span><span class="n">install_module</span><span class="p">(</span><span class="s">&#39;module_name&#39;</span><span class="p">)</span>
+</pre></div>
+<p>A fixture that returns a web test application.</p>
+<div class="highlight"><pre><span class="nd">@pytest.fixture</span>
+<span class="k">def</span> <span class="nf">app</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return  a webtest TestApp instance for a Nereid testing</span>
+<span class="sd">    application</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span> <span class="nn">nereid.testing</span> <span class="kn">import</span> <span class="n">get_app</span>
+    <span class="k">return</span> <span class="n">TestApp</span><span class="p">(</span><span class="n">get_app</span><span class="p">())</span>
+</pre></div>
+<p>A fixture to create a company</p>
+<div class="highlight"><pre><span class="nd">@pytest.fixture</span><span class="p">()</span>
+<span class="k">def</span> <span class="nf">company</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+    <span class="n">Party</span> <span class="o">=</span> <span class="n">Pool</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;party.party&#39;</span><span class="p">)</span>
+    <span class="n">Company</span> <span class="o">=</span> <span class="n">Pool</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;company.company&#39;</span><span class="p">)</span>
+    <span class="n">Country</span> <span class="o">=</span> <span class="n">Pool</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;country.country&#39;</span><span class="p">)</span>
+    <span class="n">Subdivision</span> <span class="o">=</span> <span class="n">Pool</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;country.subdivision&#39;</span><span class="p">)</span>
+    <span class="n">Currency</span> <span class="o">=</span> <span class="n">Pool</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;currency.currency&#39;</span><span class="p">)</span>
+
+    <span class="n">companies</span> <span class="o">=</span> <span class="n">Company</span><span class="o">.</span><span class="n">search</span><span class="p">([])</span>
+    <span class="k">if</span> <span class="n">companies</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">companies</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="n">usd</span><span class="p">,</span> <span class="o">=</span> <span class="n">Currency</span><span class="o">.</span><span class="n">create</span><span class="p">([{</span>
+        <span class="s">&#39;name&#39;</span><span class="p">:</span> <span class="s">&#39;US Dollar&#39;</span><span class="p">,</span>
+        <span class="s">&#39;code&#39;</span><span class="p">:</span> <span class="s">&#39;USD&#39;</span><span class="p">,</span>
+        <span class="s">&#39;symbol&#39;</span><span class="p">:</span> <span class="s">&#39;$&#39;</span><span class="p">,</span>
+    <span class="p">}])</span>
+    <span class="n">country_us</span><span class="p">,</span> <span class="o">=</span> <span class="n">Country</span><span class="o">.</span><span class="n">create</span><span class="p">([{</span>
+        <span class="s">&#39;name&#39;</span><span class="p">:</span> <span class="s">&#39;United States&#39;</span><span class="p">,</span>
+        <span class="s">&#39;code&#39;</span><span class="p">:</span> <span class="s">&#39;US&#39;</span><span class="p">,</span>
+    <span class="p">}])</span>
+    <span class="n">subdivision_florida</span><span class="p">,</span> <span class="o">=</span> <span class="n">Subdivision</span><span class="o">.</span><span class="n">create</span><span class="p">([{</span>
+        <span class="s">&#39;name&#39;</span><span class="p">:</span> <span class="s">&#39;Florida&#39;</span><span class="p">,</span>
+        <span class="s">&#39;code&#39;</span><span class="p">:</span> <span class="s">&#39;US-FL&#39;</span><span class="p">,</span>
+        <span class="s">&#39;country&#39;</span><span class="p">:</span> <span class="n">country_us</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+        <span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="s">&#39;state&#39;</span>
+    <span class="p">}])</span>
+    <span class="n">subdivision_california</span><span class="p">,</span> <span class="o">=</span> <span class="n">Subdivision</span><span class="o">.</span><span class="n">create</span><span class="p">([{</span>
+        <span class="s">&#39;name&#39;</span><span class="p">:</span> <span class="s">&#39;California&#39;</span><span class="p">,</span>
+        <span class="s">&#39;code&#39;</span><span class="p">:</span> <span class="s">&#39;US-CA&#39;</span><span class="p">,</span>
+        <span class="s">&#39;country&#39;</span><span class="p">:</span> <span class="n">country_us</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+        <span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="s">&#39;state&#39;</span>
+    <span class="p">}])</span>
+    <span class="n">company_party</span><span class="p">,</span> <span class="o">=</span> <span class="n">Party</span><span class="o">.</span><span class="n">create</span><span class="p">([{</span>
+        <span class="s">&#39;name&#39;</span><span class="p">:</span> <span class="s">&#39;ABC Corp.&#39;</span><span class="p">,</span>
+        <span class="s">&#39;addresses&#39;</span><span class="p">:</span> <span class="p">[(</span><span class="s">&#39;create&#39;</span><span class="p">,</span> <span class="p">[{</span>
+            <span class="s">&#39;name&#39;</span><span class="p">:</span> <span class="s">&#39;ABC Corp.&#39;</span><span class="p">,</span>
+            <span class="s">&#39;street&#39;</span><span class="p">:</span> <span class="s">&#39;247 High Street&#39;</span><span class="p">,</span>
+            <span class="s">&#39;zip&#39;</span><span class="p">:</span> <span class="s">&#39;94301-1041&#39;</span><span class="p">,</span>
+            <span class="s">&#39;city&#39;</span><span class="p">:</span> <span class="s">&#39;Palo Alto&#39;</span><span class="p">,</span>
+            <span class="s">&#39;country&#39;</span><span class="p">:</span> <span class="n">country_us</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+            <span class="s">&#39;subdivision&#39;</span><span class="p">:</span> <span class="n">subdivision_california</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+        <span class="p">}])],</span>
+        <span class="s">&#39;contact_mechanisms&#39;</span><span class="p">:</span> <span class="p">[(</span><span class="s">&#39;create&#39;</span><span class="p">,</span> <span class="p">[{</span>
+            <span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="s">&#39;phone&#39;</span><span class="p">,</span>
+            <span class="s">&#39;value&#39;</span><span class="p">:</span> <span class="s">&#39;123456789&#39;</span>
+        <span class="p">}])]</span>
+    <span class="p">}])</span>
+    <span class="n">employee_party</span><span class="p">,</span> <span class="o">=</span> <span class="n">Party</span><span class="o">.</span><span class="n">create</span><span class="p">([{</span>
+        <span class="s">&#39;name&#39;</span><span class="p">:</span> <span class="s">&#39;Prakash Pandey&#39;</span><span class="p">,</span>
+    <span class="p">}])</span>
+    <span class="n">company</span><span class="p">,</span> <span class="o">=</span> <span class="n">Company</span><span class="o">.</span><span class="n">create</span><span class="p">([{</span>
+        <span class="s">&#39;party&#39;</span><span class="p">:</span> <span class="n">company_party</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+        <span class="s">&#39;currency&#39;</span><span class="p">:</span> <span class="n">usd</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+    <span class="p">}])</span>
+    <span class="k">return</span> <span class="n">company</span>
+</pre></div>
+<p>These fixtures go into a file named <tt class="docutils literal">conftest.py</tt>. A full example can
+be seen in the stripe payment gateway integration module.</p>
+<div class="section" id="transactions-through-fixtures">
+<h3>Transactions through fixtures</h3>
+<p>A common setup and teardown in every test is the starting and stopping of
+a tryton transaction. pytest offers a way to write fixtures for tests that
+can be enfored to be auto used.</p>
+<div class="highlight"><pre><span class="k">class</span> <span class="nc">TestSomething</span><span class="p">:</span>
+
+    <span class="nd">@pytest.fixture</span><span class="p">(</span><span class="n">autouse</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">transaction</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">):</span>
+        <span class="kn">from</span> <span class="nn">trytond.tests.test_tryton</span> <span class="kn">import</span> <span class="n">USER</span><span class="p">,</span> <span class="n">CONTEXT</span><span class="p">,</span> <span class="n">DB_NAME</span>
+        <span class="kn">from</span> <span class="nn">trytond.transaction</span> <span class="kn">import</span> <span class="n">Transaction</span>
+
+        <span class="n">Transaction</span><span class="p">()</span><span class="o">.</span><span class="n">start</span><span class="p">(</span><span class="n">DB_NAME</span><span class="p">,</span> <span class="n">USER</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="n">CONTEXT</span><span class="p">)</span>
+
+        <span class="k">def</span> <span class="nf">finalizer</span><span class="p">():</span>
+            <span class="n">Transaction</span><span class="p">()</span><span class="o">.</span><span class="n">cursor</span><span class="o">.</span><span class="n">rollback</span><span class="p">()</span>
+            <span class="n">Transaction</span><span class="p">()</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
+
+        <span class="n">request</span><span class="o">.</span><span class="n">addfinalizer</span><span class="p">(</span><span class="n">finalizer</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">test_party_search</span><span class="p">():</span>
+        <span class="n">Party</span> <span class="o">=</span> <span class="n">Pool</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;party.party&#39;</span><span class="p">)</span>
+        <span class="n">Party</span><span class="o">.</span><span class="n">search</span><span class="p">([])</span>
+</pre></div>
+<p>The <tt class="docutils literal">test_party_search</tt> test would be executed within a Tryton
+transaction and the teardown would be the finalizer function defined in
+the transaction fixture.</p>
+</div>
+</div>
+<div class="section" id="writing-test-functions">
+<h2>Writing test functions</h2>
+<p>Once the fixtures are done, test functions could be written that have
+little or no boilerplate code as in the above example.</p>
+<div class="highlight"><pre><span class="k">def</span> <span class="nf">test_login</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">app</span><span class="p">,</span> <span class="n">nereid_user</span><span class="p">,</span> <span class="n">website</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Test the login functionality</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="n">app</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;/login&#39;</span><span class="p">)</span>
+
+    <span class="c"># Fill and submit the login form</span>
+    <span class="n">form</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">forms</span><span class="p">[</span><span class="s">&#39;login-form&#39;</span><span class="p">]</span>
+    <span class="n">form</span><span class="p">[</span><span class="s">&#39;email&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">nereid_user</span><span class="o">.</span><span class="n">email</span>
+    <span class="n">form</span><span class="p">[</span><span class="s">&#39;password&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;password&#39;</span>
+    <span class="n">res</span> <span class="o">=</span> <span class="n">form</span><span class="o">.</span><span class="n">submit</span><span class="p">()</span>
+
+    <span class="c"># Ensure that the response was a redirect to home page</span>
+    <span class="k">assert</span> <span class="n">res</span><span class="o">.</span><span class="n">status_int</span> <span class="o">==</span> <span class="mi">302</span>
+    <span class="k">assert</span> <span class="n">res</span><span class="o">.</span><span class="n">location</span> <span class="o">==</span> <span class="s">&#39;http://localhost:80/&#39;</span>
+</pre></div>
+<p>Since the session is maintained by the app, you can now make requests as
+though the user is already logged in like in a browser session.</p>
+<div class="highlight"><pre><span class="n">response</span> <span class="o">=</span> <span class="n">app</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;/my-account&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="section" id="common-patterns">
+<h2>Common patterns</h2>
+<div class="section" id="status-code-checks">
+<h3>Status code checks</h3>
+<p>Most expected responses from a web application are 2XX or 3XX. Webtest by
+default raises an exception when the response is not one of these two.
+This avoids a common pattern where you get a response first and then check
+the status code.</p>
+<div class="highlight"><pre><span class="n">app</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;/an-url-that-does-not-exist&#39;</span><span class="p">)</span>
+</pre></div>
+<p>will automatically raise an exception indicating the response was a
+<tt class="docutils literal">404</tt>.</p>
+</div>
+<div class="section" id="status-codes-based-on-login">
+<h3>Status codes based on login</h3>
+<p>A common pattern followed in functional tests of a web application is
+checking how a resource responds based on the user's login status and
+permissions. Usually this involves:</p>
+<ul class="simple">
+<li>GET the resource without logging in.</li>
+<li>Check Response</li>
+<li>Log the user in</li>
+<li>GET the resource again</li>
+<li>Check Response</li>
+</ul>
+<p>webtest makes this straightforward</p>
+<div class="highlight"><pre><span class="n">app</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;/my-account&#39;</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="mi">302</span><span class="p">)</span>
+</pre></div>
+<p>Expect a 302 (redirect to login) when <tt class="docutils literal"><span class="pre">/my-account</span></tt> is accessed
+directly.</p>
+<p>login and test</p>
+<div class="highlight"><pre><span class="n">app</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s">&#39;/login&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s">&#39;email&#39;</span><span class="p">:</span> <span class="s">&#39;my-email@domain.com&#39;</span><span class="p">,</span> <span class="s">&#39;password&#39;</span><span class="p">:</span> <span class="s">&#39;pass&#39;</span><span class="p">})</span>
+<span class="n">app</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;/my-account&#39;</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span>
+</pre></div>
+<p>An exception is raised the expected response of <tt class="docutils literal">200</tt> is not received.</p>
+</div>
+<div class="section" id="json-responses">
+<h3>JSON responses</h3>
+<p>webtest responses include a json property that parses and returns the
+json response as a python literal.</p>
+<div class="highlight"><pre><span class="n">response</span> <span class="o">=</span> <span class="n">app</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;/user-status&#39;</span><span class="p">)</span>
+<span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">[</span><span class="s">&#39;name&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;Sharoon Thomas&#39;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="other-ideas">
+<h2>Other ideas</h2>
+<p>While it is easy to write new fixtures, having reusable fixtures in
+upstream modules to create chart of accounts, commonly used journals,
+companies or currencies could make writing tests for downstream modules
+which use them faster. The easier it is to write a test, the more likely
+the developer is to write tests.</p>
+<p>Nereid webshop is a project that could take a lot of benefit from this
+pattern since it bundles templates with it. A functional test suite that
+checks the entire business process from adding to cart all the way to
+checkout could ensure that changes in templates by designers do not break
+the functionality of the webshop. Perhaps, the test could be inherited by
+modules which are themes for webshop, only making changes to tests where
+functional changes exist on modules.</p>
+<p>I hope that this post helps you write better tests for nereid with webtest
+and pytest.</p>
+</div>
+
+            <a href="#" class="go-top">Go Top</a>
+<footer class="footer">
+    <p>&copy; Sharoon Thomas &ndash;
+        Built with <a href="https://github.com/PurePelicanTheme/pure-single">Pure Theme</a>
+        for <a href="http://blog.getpelican.com/">Pelican</a>
+    </p>
+</footer>        </div>
+    </div>
+    </div>
+    <script>
+        var $top = $('.go-top');
+
+        // Show or hide the sticky footer button
+        $(window).scroll(function() {
+            if ($(this).scrollTop() > 200) {
+                $top.fadeIn(200);
+            } else {
+                $top.fadeOut(200);
+            }
+        });
+
+        // Animate the scroll to top
+        $top.click(function(event) {
+            event.preventDefault();
+            $('html, body').animate({scrollTop: 0}, 300);
+        })
+
+        // Makes sure that the href="#" attached to the <a> elements
+        // don't scroll you back up the page.
+        $('body').on('click', 'a[href="#"]', function(event) {
+            event.preventDefault();
+        });
+    </script>
+
+</body>
+</html>
