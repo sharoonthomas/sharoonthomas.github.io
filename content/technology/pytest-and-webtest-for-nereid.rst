@@ -301,8 +301,14 @@ functional changes exist on modules.
 I hope that this post helps you write better tests for nereid with webtest
 and pytest.
 
+Comments
+--------
+
+Nope, not here... discuss on HN_.
+
 .. _webtest: http://webtest.readthedocs.org/en/latest/
 .. _pytest: https://pytest.org/
 .. _nereid: http://nereid.readthedocs.org/en/latest/
 .. _Fixture: http://pytest.org/latest/fixture.html#fixture
 .. _tryton: http://www.tryton.org/
+.. _HN: https://news.ycombinator.com/item?id=9856702
