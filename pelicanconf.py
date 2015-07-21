@@ -43,3 +43,6 @@ TAGLINE = "I would love to change the world, but they won’t give me the source
 STATIC_PATHS = ['images']
 READERS = {'html': None}
 OUTPUT_RETENTION = ('CNAME',)
+
+
+GOOGLE_ANALYTICS = 'UA-65365288-1'
